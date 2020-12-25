@@ -1,0 +1,4 @@
+USERXSESSION="~/.cache/x11/xsession"
+USERXSESSIONRC="~/.cache/x11/xsessionrc"
+ALTUSERXSESSION="~/.cache/x11/Xsession"
+ERRFILE="~/.cache/x11/xsession-errors"
