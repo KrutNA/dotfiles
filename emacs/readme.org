@@ -54,7 +54,8 @@ File paths for this file and custom (custom is unused but it always created).
 
 #+BEGIN_SRC emacs-lisp
   (setq custom-file                       (concat user-emacs-directory "custom.el")
-	config-org-file                   (concat user-emacs-directory "readme.org"))
+	config-org-file                   (concat user-emacs-directory "readme.org")
+	backup-directory-alist            `(("." . ,(concat user-emacs-directory "backups"))))
 #+END_SRC
 
 *** Variables
@@ -67,14 +68,17 @@ Variables for later using.
 	local-confs/column-num            t               ; number of current column
 	local-confs/line-num              t               ; number of current line
 
-	; which-key
+	;; programming
+	electric-pair-mode                t               ; double parenthesis
+	local-confs/paren-mode            t               ; show matching pars
+	show-paren-delay                  0               ; delay to showing
+
+	;; which-key
 	local-confs/which-key-delay       0               ; delay to which-key after keypress 
 	local-confs/which-key-s-delay     0.05            ; delay to rerender
 
-
-	; path to `tree-sitter` binaries
-	local-confs/tree-sitter-bins      (concat xdg-data-home
-						  "/tree-sitter/bin")
+	;; path to `tree-sitter` binaries
+	local-confs/tree-sitter-bins      (concat xdg-data-home "/tree-sitter/bin")
 	)
 #+END_SRC
 
@@ -182,11 +186,38 @@ Shows available keys on keypress
 
 * org-mode
 #+BEGIN_SRC emacs-lisp
-
+  (use-package org
+    :after ox-latex
+    :hook (org-mode . turn-on-org-cdlatex)
+    :config
+    (setq org-src-fontify-natively t
+	  org-confirm-babel-evaluate nil
+	  org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+				  "xelatex -interaction nonstopmode %f")
+	  org-babel-inline-result-wrap "%s"
+	  org-latex-packages-alist '(((concat "a4paper,left=3cm,top=2cm,right=1.5cm,bottom=2cm,"
+					      "marginparsep=7pt,marginparwidth=.6in") "geometry" t)
+				     ("" "cmap" t)
+				     ("" "xcolor" t)
+				     ("" "listings" t)
+				     ("" "polyglossia" t))))
 #+END_SRC
 
 
 * programming
+
+** configurations (from variables)
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode local-confs/paren-mode)
+#+END_SRC
+
+** rainbow delimiters
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
+#+END_SRC
+
 ** COMMENT flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -232,15 +263,65 @@ Base configuration of ~lsp~ client.
   (use-package lsp-ui
     :ensure t
     :commands lsp-ui-mode)
+#+END_SRC
 
+*** helm
+
+#+BEGIN_SRC emacs-lisp
   (use-package helm-lsp
     :ensure t
     :commands helm-lsp-workspace-symbol)
 #+END_SRC
 
+** company
+
+Autocompletion with ~company~
+
+*** company
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :hook (after-init . global-company-mode))
+#+END_SRC
+
+*** company box
+
+Backend for ~company~ with icons
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode))
+#+END_SRC
+
+*** company-lsp
+
+~company~ backend for ~lsp~ 
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company-lsp
+    :ensure t
+    :after company-mode
+    :config
+    (add-to-list 'company-backends company-lsp))
+#+END_SRC
+
+** yasnippets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :hook ((prog-mode org-mode) . yas-minor-mode))
+
+  (use-package yasnippet-snippets
+    :ensure t
+    :after yasnippet)
+#+END_SRC
+
 ** langs
 
-Specifiend customizations for programming languages.
+Specifiend customizations for programming related languages.
 
 *** rust
 
@@ -253,6 +334,12 @@ Customization of Rust language.
     :init
     (tree-sitter-load 'rust)
     (tree-sitter-require 'rust))
+#+END_SRC
+
+*** json
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :ensure t :defer t)
 #+END_SRC
 
 ** COMMENT debug
@@ -290,3 +377,8 @@ Function for tangle (convert to ~init.el~) this file on save.
   (add-hook 'after-save-hook 'tangle-file)
 #+END_SRC
 
+
+* COMMENT Empty src block
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC

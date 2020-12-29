@@ -8,8 +8,6 @@ export XSERVERRC="$XDG_CONFIG_HOME"/X11/xserverrc
 
 # zsh hist file
 export HISTFILE="$XDG_DATA_HOME"/zsh/history
-# zsh cache?..
-compinit -d $XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION
 
 # Setup directory for user specified binaries
 export PATH=$HOME"/.local/bin":$PATH
