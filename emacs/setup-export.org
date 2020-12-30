@@ -1,0 +1,12 @@
+#+language: ru
+#+options: toc:nil
+
+#+latex_header: \newcommand\mainfont{Liberation Serif}
+#+latex_header: \newcommand\romnfont{Liberation Serif}
+#+latex_header: \newcommand\sansfont{Liberation Sans}
+#+latex_header: \newcommand\monofont{Fira Code}
+
+#+latex_header: \setmainfont{\mainfont}\newfontfamily\cyrillicfont[Script=Cyrillic]{\mainfont}
+#+latex_header: \setromanfont{\mainfont}\newfontfamily\cyrillicfontrm[Script=Cyrillic]{\mainfont}
+#+latex_header: \setsansfont{\sansfont}\newfontfamily\cyrillicfontsf[Script=Cyrillic]{\sansfont}
+#+latex_header: \setmonofont{\monofont}\newfontfamily\cyrillicfonttt[Script=Cyrillic]{\monofont}
