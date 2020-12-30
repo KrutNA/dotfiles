@@ -4,7 +4,8 @@
 	     '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(unless (boundp 'use-package-version)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (require 'use-package)
@@ -15,21 +16,28 @@
       xdg-download-dir                  "~/downloads")
 
 (setq custom-file                       (concat user-emacs-directory "custom.el")
-      config-org-file                   (concat user-emacs-directory "readme.org"))
+      config-org-file                   (concat user-emacs-directory "readme.org")
+      backup-directory-alist            `(("." . ,(concat user-emacs-directory "backups"))))
 
 (setq local-confs/font-height           105             ; 10 = 1pt
       local-confs/tool-bar              -1              ; -1 for desabling
       local-confs/column-num            t               ; number of current column
       local-confs/line-num              t               ; number of current line
 
-      ; which-key
+      ;; LaTeX
+      local-confs/latex-compiler        "xelatex"
+
+      ;; programming
+      electric-pair-mode                t               ; double parenthesis
+      local-confs/paren-mode            t               ; show matching pars
+      show-paren-delay                  0               ; delay to showing
+
+      ;; which-key
       local-confs/which-key-delay       0               ; delay to which-key after keypress 
       local-confs/which-key-s-delay     0.05            ; delay to rerender
 
-
-      ; path to `tree-sitter` binaries
-      local-confs/tree-sitter-bins      (concat xdg-data-home
-						"/tree-sitter/bin")
+      ;; path to `tree-sitter` binaries
+      local-confs/tree-sitter-bins      (concat xdg-data-home "/tree-sitter/bin")
       )
 
 (setenv "PATH"
@@ -60,18 +68,45 @@
 
 (use-package helm
   :ensure t
-  :bind (:map helm-command-map
-	 ("C-c h" . helm-execute-persistent-action)))
+  :bind (:map helm-command-map ("C-c h" . helm-execute-persistent-action)))
 
 (use-package which-key
   :ensure t
   :custom
   (which-key-idle-delay 0)
   (which-key-idle-secondary-delay 0.05)
-  :config
-  (which-key-mode))
+  (which-key-mode t))
 
+(use-package auctex
+  :ensure t :defer t)
 
+(use-package org
+  :after ox-latex
+  ;; :hook (org-mode . turn-on-org-cdlatex)
+  :custom
+  (org-src-fontify-natively t)
+  (org-confirm-babel-evaluate nil)
+  (org-latex-compiler local-confs/latex-compiler)
+  (org-babel-inline-result-wrap "%s")
+  (org-babel-load-languages '((emacs-lisp      . t)
+			      (shell           . t)
+			      (awk             . t)
+			      ;; (rust            . t)
+			      (C               . t)
+			      ;; (cpp             . t)
+			      (python          . t)))
+  (org-latex-packages-alist `((,(concat "a4paper,left=3cm,top=2cm,right=1.5cm,bottom=2cm,"
+					"marginparsep=7pt,marginparwidth=.6in") "geometry" t)
+			      ;; ("" "cmap" t)
+			      ("" "xcolor" t)
+			      ;; ("" "listings" t)
+			      ("AUTO" "polyglossia" t ("xelatex")))))
+
+(show-paren-mode local-confs/paren-mode)
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 
 (use-package tree-sitter
   :ensure t
@@ -117,7 +152,7 @@
 
 (use-package yasnippet
   :ensure t
-  :hook (prog-mode . yas-minor-mode))
+  :hook ((prog-mode org-mode) . yas-minor-mode))
 
 (use-package yasnippet-snippets
   :ensure t
