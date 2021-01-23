@@ -27,5 +27,17 @@ colors:
     white:   '0xb7cff9'
 
   cursor:
-    text: "0x002635"
-    cursor: "0xffcc1b"
+    text:    '0x002635'
+    cursor:  '0xffcc1b'
+
+window:
+  dimensions:
+    columns: 110
+    lines:   35
+
+  decorations: full
+
+  dynamic_title: true
+
+background_opacity: 0.95
+

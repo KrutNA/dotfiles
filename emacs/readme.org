@@ -661,6 +661,13 @@ Requres [[https://github.com/prominic/groovy-language-server#build][Groovy lsp]]
     :hook (json-mode . lsp))
 #+end_src
 
+*** yaml
+
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :ensure t :defer t)
+#+end_src
+
 
 * scripts
 

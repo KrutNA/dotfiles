@@ -269,6 +269,9 @@
   :delight "JSON"
   :hook (json-mode . lsp))
 
+(use-package yaml-mode
+  :ensure t :defer t)
+
 (defun sudo-reopen ()
   "Open curent file with sudo"
   (interactive)
