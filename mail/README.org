@@ -1,0 +1,10 @@
+* WARNING
+
+According to [[https://sourceforge.net/p/isync/bugs/47/][isync issue]]. TLDR: they used UTF-7 encoding. 
+
+Using non-english mail boxes and dirs reqires isync with UTF-8 support,
+for example [[https://aur.archlinux.org/packages/isync-utf8-mailboxes/][isync-utf8-mailboxes]] from AUR.
+If you're using Arch, you could simply install package.
+On other distros you could build and create package.
+
+Also it requires ~UseUTF8Mailboxes yes~ in ~IMAPStore~ field provided by this package.

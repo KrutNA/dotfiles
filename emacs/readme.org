@@ -391,17 +391,6 @@ Backend for ~company~ with icons
     :hook (company-mode . company-box-mode))
 #+end_src
 
-*** company-lsp
-
-~company~ backend for ~lsp~ 
-
-#+begin_src emacs-lisp
-  (use-package company-lsp
-    :ensure t
-    :after company-mode
-    :config
-    (add-to-list 'company-backends company-lsp))
-#+end_src
 
 ** yasnippets
 
@@ -666,6 +655,69 @@ Requres [[https://github.com/prominic/groovy-language-server#build][Groovy lsp]]
 #+begin_src emacs-lisp
   (use-package yaml-mode
     :ensure t :defer t)
+#+end_src
+
+
+* mu4e
+
+#+begin_src emacs-lisp
+  (use-package smtpmail
+    :defer t
+    :custom
+    (message-send-mail-function         'smtpmail-send-it)
+    (message-send-mail-function         'message-send-mail-with-sendmail)
+    (sendmail-coding-system             'utf-8))
+
+  (use-package mu4e
+    :load-path "/usr/share/emacs/site-lisp/mu4e/"
+    :commands (mu4e)
+    :after smtpmail
+    :bind (("C-x m" . mu4e)
+	   :map mu4e-headers-mode-map
+	   ("v"     . mu4e-headers-view-message))
+    :custom
+    (mu4e-maildir-shortcuts              t)
+    (mu4e-change-filenames-when-moving   t)
+    (mu4e-view-prefer-html               t)
+    (mu4e-show-images                    t)
+    (mu4e-view-image-max-width         800)
+    (mu4e-enable-async-operations        t)
+    (message-kill-buffer-on-exit         t)
+    (mu4e-enable-mode-line               t)
+    (mu4e-index-cleanup                nil) 
+    (mu4e-index-lazy-check               t)
+    (mu4e-use-fancy-chars              nil)
+    (mu4e-enable-notifications           t)
+    (mu4e-html2text-command              "/usr/local/bin/w3m -T text/html")
+    (mu4e-get-mail-command               "mbsync -c ~/.config/mail/mbsyncrc mailru.main")
+    :config
+    (defun mu4e/check-msg-contact (msg)
+      ""
+      (when msg
+	(mu4e-message-contact-field-matches msg :from-or-to user-mail-address)))
+    (defun mu4e/switch-msg (name)
+      "Message on switch"
+      (mu4e-message "Switch to %s" name))
+    (setq local/msmtp-config (concat xdg-config-home "/mail/msmtprc"))
+    (setq mu4e-contexts
+	  `( ,(make-mu4e-context
+		 :name       "mailru.main"
+		 :enter-func (lambda () (mu4e/switch-msg "MailRu Main"))
+		 :match-func 'mu4e/check-msg-contact
+		 :vars      '((user-mail-address             . "krutko_n_a@mail.ru")
+			      (user-full-name                . "Krutko Nikita")
+			      (mu4e-drafts-folder            . "/mailru.main/Черновики")
+			      (mu4e-trash-folder             . "/mailru.main/Корзина")
+			      (mu4e-sent-folder              . "/mailru.main/Отправленные")
+			      (mu4e-refile-folder            . "/mailru.main/Архив")
+			      (mu4e-compose-signature        . "\nBest regards,\nKrutko Nikita")
+			      (smtpmail-smtp-server          . "smtp.mail.ru")
+			      (smtpmail-smtp-service         . 465)
+			      (starttls-use-gnutls           . t)
+			      (smtpmail-starttls-credentials . '(("smtp.mail.ru" 465 nil nil)))
+			      (smtpmail-auth-credentials     . '(("smtp.mail.ru" 465
+								  "krutko_n_a@mail.ru" nil)))
+			      (smtpmail-smtp-user            . "krutko_n_a@mail.ru"))))))
 #+end_src
 
 

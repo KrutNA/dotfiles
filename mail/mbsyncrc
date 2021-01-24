@@ -1,0 +1,26 @@
+IMAPAccount      mailru.main
+Host             imap.mail.ru
+Port             993
+User             krutko_n_a@mail.ru
+PassCmd          "pass show email/mailru.main"
+AuthMechs        LOGIN
+CertificateFile  /etc/ssl/certs/ca-certificates.crt
+SSLType          IMAPS
+
+IMAPStore        mailru.main.remote
+Account          mailru.main
+UseUTF8Mailboxes yes
+
+MaildirStore     mailru.main.local
+Path      ~/mail/mailru.main/
+Inbox     ~/mail/mailru.main/inbox
+SubFolders       Verbatim
+
+Channel          mailru.main
+Master          :mailru.main.remote:
+Slave           :mailru.main.local:
+Patterns         *
+Create           Both
+Expunge          Both
+SyncState        *
+
