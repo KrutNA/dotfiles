@@ -267,7 +267,6 @@
   :ensure t :defer t)
 
 (use-package smtpmail
-  :defer t
   :custom
   (message-send-mail-function         'smtpmail-send-it)
   (message-send-mail-function         'message-send-mail-with-sendmail)
