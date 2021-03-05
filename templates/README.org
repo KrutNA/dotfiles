@@ -1,0 +1,122 @@
+* Инциализация MSYS2
+
+#+begin_src sh
+  # Обновление информации о пакетах
+  pacman -Syu
+
+  # Установка необходимых пакетов
+  pacman -S mingw-w64-x86_64-cmake \
+	    mingw-w64-x86_64-make \
+	    mingw-w64-x86_64-clang \
+	    mingw-w64-x86_64-clang-tools-extra \
+	    mingw-w64-x86_64-gcc
+#+end_src
+
+* Инициализация проекта
+
+#+begin_src sh
+  # Находясь в корне проекта создать все необходимые директории
+  mkdir -p src include bin/release bin/debug
+#+end_src
+
+
+Добавить в корень проекта шаблон CMakeLists.txt
+
+Изменить второй параметр в ~set(EXECUTABLE_NAME ...)~ на название проекта 
+
+
+В корне проекта:
+
+#+begin_src sh
+  # Инициализация проекта
+  cmake -G'MinGW Makefiles' . 
+
+  # Инициализация информации для LSP - clangd
+  # (Файл compile_commands.json)
+  # При изменении CMakeLists.txt требуется повторять эту команду
+  cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
+#+end_src
+
+* Базовая иерархия файлов
+
+| Файл                    | Информация                          |
+| ~/CMakeLists.txt~       | Настройка сборки проекта            |
+| ~compile_commands.json~ | Информация для LSP сервера (clangd) |
+| ~src~                   | Директория исходных файлов          |
+| ~include~               | Директория для заголовочных файлов  |
+| ~bin/debug~             | Директория для выходного debug      |
+| ~bin/release~           | Директория для выходного release    |
+
+* Сборка
+
+** DEBUG
+
+#+begin_src sh
+  cmake --build -DCMAKE_BUILD_TYPE=Debug .
+#+end_src
+
+** RELEASE
+
+#+begin_src sh
+  cmake --build .
+#+end_src
+
+* Редактирование
+
+При изменении проекта требуется изменять ~CMakeLists.txt~
+
+При любом изменении требуется обновлять базу данных для ~clangd~
+
+#+begin_src sh
+  cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
+#+end_src
+
+** Исходные файлы
+
+*** Изменять
+
+#+begin_src cmake
+  file(GLOB SRCS
+    ${SRC_DIR}/main.cpp
+    )
+#+end_src
+
+*** Пример
+
+Для добавления файла ~src/some_file.cpp~
+
+#+begin_src cmake
+  file(GLOB SRCS
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/some_file.cpp
+    )
+#+end_src
+
+** Заголовочные файлы
+
+При создании поддиректорий в ~include~ требуется также добавить их в проект.
+
+*** Изменять
+
+#+begin_src cmake
+  include_directories(
+    ${INCLUDE_DIR}
+    )
+#+end_src
+
+*** Пример
+
+Для добавления директории ~include/my_new_include_dir~ опционально можно создать переменную
+
+#+begin_src cmake
+  set(MY_NEW_INCLUDE_DIR ${INCLUDE_DIR}/my_new_include_dir)
+#+end_src
+
+И добавить в список
+
+#+begin_src cmake
+  include_directories(
+    ${INCLUDE_DIR}
+    ${MY_NEW_INCLUDE_DIR}
+    )
+#+end_src
